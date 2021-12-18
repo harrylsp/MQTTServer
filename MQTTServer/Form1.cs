@@ -25,10 +25,13 @@ namespace MQTTServer
 
         private void btnStartServer_Click(object sender, EventArgs e)
         {
-            StartServer();
+            var username = this.txtUserName.Text;
+            var password = this.txtPassword.Text;
+
+            StartServer(username, password);
         }
 
-        public async void StartServer()
+        public async void StartServer(string username, string password)
         {
             try
             {
@@ -37,8 +40,8 @@ namespace MQTTServer
                     var optionsBuilder = new MqttServerOptionsBuilder()
                     .WithDefaultEndpoint().WithDefaultEndpointPort(1883).WithConnectionValidator(c =>
                     {
-                        var currentUser = "lsp";
-                        var currentPwd = "123";
+                        var currentUser = username;
+                        var currentPwd = password;
 
                         if (currentUser == null || currentPwd == null)
                         {
@@ -72,6 +75,8 @@ namespace MQTTServer
                         {
                             this.txtMessage.Text += "MQTT服务启动完成！" + Environment.NewLine;
                         }));
+
+                        LogManager.WriteLogEx(LOGLEVEL.INFO, "MQTT服务启动完成！");
                     }));
                     //mqttServer.StartedHandler = new MqttServerStartedHandlerDelegate(OnMqttServerStarted);
 
@@ -84,6 +89,8 @@ namespace MQTTServer
                         {
                             this.txtMessage.Text += "MQTT服务停止完成！" + Environment.NewLine;
                         }));
+
+                        LogManager.WriteLogEx(LOGLEVEL.INFO, "MQTT服务停止完成！");
                     }));
 
                     mqttServer.ClientConnectedHandler = new MqttServerClientConnectedHandlerDelegate(new Action<MqttServerClientConnectedEventArgs>(e =>
